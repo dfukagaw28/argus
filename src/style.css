@@ -24,6 +24,7 @@ body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.6;padding-inline:16px;padding-block:20px 48px}
 .wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
 h1{font-family:var(--display);font-weight:900;font-size:26px;line-height:1.2;margin:0;letter-spacing:.01em;text-wrap:balance}
+.reg{font-size:.5em;font-weight:700;vertical-align:super;line-height:0;margin-left:.08em}
 h2{font-family:var(--display);font-weight:700;font-size:16px;margin:0;text-wrap:balance}
 button,select,input{font:inherit;color:inherit}
 button{cursor:pointer}

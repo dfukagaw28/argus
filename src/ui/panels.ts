@@ -1,6 +1,6 @@
 import { $, esc, fmt1, fmtInt, ymd } from '../util';
 import { ROLES } from '../schema/roles';
-import type { Agg } from '../model/types';
+import type { AggCore } from '../model/types';
 import { state } from '../state';
 
 export function renderFiles() {
@@ -14,7 +14,7 @@ export function renderFiles() {
     const status = weak ? '<b>列を自動で判別できませんでした。下の「列の対応」で指定してください。</b>'
       : (roster ? '受講者名簿として読み込みました。' : '') + '読み取った項目：' + esc(found.join('・')) + (f.saved ? '（保存した列の対応を使用）' : '');
     return `<div class="file"><div class="file-head"><b>${esc(f.name)}</b>
-      <span class="file-meta">${roster ? '<span class="tag">名簿</span> ' : ''}${fmtInt(f.rows.length)} ${roster ? '人' : '行'}　<button class="btn link" type="button" data-rm="${f.id}">取り除く</button></span></div>
+      <span class="file-meta">${roster ? '<span class="tag">名簿</span> ' : ''}${fmtInt(f.nRows)} ${roster ? '人' : '行'}　<button class="btn link" type="button" data-rm="${f.id}">取り除く</button></span></div>
       <div class="file-meta">${status}</div>
       <details${weak ? ' open' : ''}><summary>列の対応を直す</summary><div class="mapgrid">
       <label>ファイルの種類<select data-f="${f.id}" data-k="__kind">
@@ -30,7 +30,7 @@ export function renderFiles() {
 
 const hoursOrMin = (m: number): [string, string] => m >= 600 ? [fmt1(m / 60), '時間'] : [fmtInt(m), '分'];
 
-export function renderKpis(a: Agg) {
+export function renderKpis(a: AggCore) {
   const [tv, tu] = hoursOrMin(a.min);
   const period = a.tMin && a.tMax ? `${ymd(a.tMin)} 〜 ${ymd(a.tMax)}` : '日付の列なし';
   const per = a.nViewers ? hoursOrMin(a.min / a.nViewers) : null;

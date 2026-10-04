@@ -73,10 +73,3 @@ export async function buildWorkbook(a: Agg, source: string, missTh = 0): Promise
     a.recs.map(r => [xDate(r.t), r.uName, r.uId, r.email, r.vName, r.folder, r.views, Math.round(r.min * 100) / 100, r1(r.pct)]));
   return wb.xlsx.writeBuffer() as Promise<ArrayBuffer>;
 }
-
-export function download(buf: ArrayBuffer, name: string) {
-  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
-}

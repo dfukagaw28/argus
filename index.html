@@ -6,7 +6,10 @@
 <!--csp-->
 <meta name="referrer" content="no-referrer">
 <title>Panopto 視聴集計</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='8' width='3' height='7' rx='1' fill='%232a78d6'/%3E%3Crect x='6.5' y='4' width='3' height='11' rx='1' fill='%232a78d6'/%3E%3Crect x='12' y='1' width='3' height='14' rx='1' fill='%232a78d6'/%3E%3C/svg%3E">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#1c5cab">
 </head>
 <body>
 <div class="wrap">
@@ -23,9 +26,15 @@
       <strong>Panopto の統計レポート（CSV / Excel）をここにドロップ</strong>
       <span>複数ファイルをまとめて読み込めます。列名は自動で判別し、あとから直せます。受講者名簿を一緒に読み込むと、まったく視聴していない人もわかります。</span>
     </div>
+    <span class="busy" id="busy" role="status" hidden></span>
     <button class="btn" id="btn-pick" type="button">ファイルを選ぶ</button>
     <input type="file" id="file-input" multiple accept=".csv,.tsv,.txt,.xlsx" hidden>
   </section>
+
+  <div class="notice" id="update" role="status" hidden>
+    <span>新しい版があります。更新すると、読み込んだファイルはいったん閉じられます。</span>
+    <button class="btn" id="btn-update" type="button">更新する</button>
+  </div>
 
   <div class="notice" id="sample-note" hidden>
     <span>いま表示しているのは<b>サンプルデータ</b>です（架空の受講者 36 人・動画 12 本）。ファイルを読み込むと置き換わります。</span>

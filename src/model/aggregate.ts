@@ -96,7 +96,7 @@ const newUser = (p: Person): UserAgg =>
 export type Metric = 'views' | 'min' | 'users';
 
 /** Time series with empty buckets filled so the axis is continuous. */
-export function seriesData(a: Agg, gran: Gran, metric: Metric): { k: string; v: number }[] {
+export function seriesData(a: Pick<Agg, 'days'>, gran: Gran, metric: Metric): { k: string; v: number }[] {
   const m = new Map<string, { views: number; min: number; users: Set<string> }>();
   for (const d of a.days.values()) {
     const k = bucketKey(d.date, gran);

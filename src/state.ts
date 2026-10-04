@@ -1,14 +1,13 @@
-import type { Agg, Person, Rec, SourceFile } from './model/types';
+import type { AggView, FileInfo } from './engine/engine';
 import type { Gran, Metric } from './model/aggregate';
 
 export type Tab = 'videos' | 'users' | 'matrix' | 'missing';
 export type SortKey = [key: string, dir: 1 | -1];
 
 export const state = {
-  files: [] as SourceFile[],
+  files: [] as FileInfo[],
   sample: true,
-  recs: [] as Rec[],
-  roster: [] as Person[],
+  folders: [] as string[],
   /** records dropped because an earlier file already had them */
   dupes: 0,
   /** '' = all folders */
@@ -23,5 +22,5 @@ export const state = {
   /** a pair below this completion % also counts as unwatched; 0 = only “no record” */
   missTh: 0,
   sort: { videos: ['min', -1], users: ['min', -1], missing: ['nMissing', -1] } as Record<'videos' | 'users' | 'missing', SortKey>,
-  agg: null as unknown as Agg,
+  agg: null as unknown as AggView,
 };

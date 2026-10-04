@@ -6,15 +6,17 @@ import type { FileKind, SourceFile } from '../model/types';
 const KEY = 'argus.columns.v1';
 interface Saved { map: ColumnMap; unit: Unit; kind: FileKind }
 
+export type SavedLayouts = Record<string, Saved>;
 const signature = (headers: string[]) => headers.map(normHead).join('|');
 
-function readAll(): Record<string, Saved> {
+/** Snapshot of all saved layouts (read on the main thread; workers have no localStorage). */
+export function loadSaved(): SavedLayouts {
   try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch { return {}; }
 }
 
 /** Applies a saved layout if one matches; returns whether it did. */
-export function applySaved(f: SourceFile): boolean {
-  const s = readAll()[signature(f.headers)];
+export function applySaved(f: Pick<SourceFile, 'headers' | 'map' | 'unit' | 'kind'>, all: SavedLayouts = loadSaved()): boolean {
+  const s = all[signature(f.headers)];
   if (!s || !s.map) return false;
   // ignore columns that no longer exist
   for (const k of Object.keys(f.map) as (keyof ColumnMap)[]) {
@@ -26,14 +28,14 @@ export function applySaved(f: SourceFile): boolean {
   return true;
 }
 
-export function save(f: SourceFile) {
+export function save(f: Pick<SourceFile, 'headers' | 'map' | 'unit' | 'kind'>) {
   try {
-    const all = readAll();
+    const all = loadSaved();
     all[signature(f.headers)] = { map: f.map, unit: f.unit, kind: f.kind };
     localStorage.setItem(KEY, JSON.stringify(all));
   } catch { /* storage unavailable: fixes just aren't remembered */ }
 }
 
-export function forget(f: SourceFile) {
-  try { const all = readAll(); delete all[signature(f.headers)]; localStorage.setItem(KEY, JSON.stringify(all)); } catch { /* ignore */ }
+export function forget(f: Pick<SourceFile, 'headers'>) {
+  try { const all = loadSaved(); delete all[signature(f.headers)]; localStorage.setItem(KEY, JSON.stringify(all)); } catch { /* ignore */ }
 }

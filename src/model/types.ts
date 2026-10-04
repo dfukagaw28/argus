@@ -30,3 +30,6 @@ export interface Agg {
   heat: number[][]; views: number; min: number; tMin: Date | null; tMax: Date | null; hasClock: boolean; anyComp: boolean; comp: number | null;
   /** users with at least one view */ nViewers: number; hasRoster: boolean;
 }
+
+/** Everything the views need; the per-record list is only used for export. */
+export type AggCore = Omit<Agg, 'recs'>;

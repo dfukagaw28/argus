@@ -154,3 +154,7 @@ td.t.wide{max-width:none;min-width:280px}
   .mx th:first-child,.mx td:first-child{position:static}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+.busy{display:inline-flex;gap:8px;align-items:center;color:var(--accent-strong);font-weight:600}
+.busy::before{content:"";width:14px;height:14px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.busy::before{animation:none}}

@@ -1,6 +1,6 @@
 import { $, fmt1, fmtInt, WD, wday } from '../util';
 import { seriesData } from '../model/aggregate';
-import type { Agg } from '../model/types';
+import type { AggCore } from '../model/types';
 import { state } from '../state';
 import { hideTip, showTip } from './tip';
 
@@ -47,7 +47,7 @@ export function renderSeries() {
   box.onmouseleave = hideTip;
 }
 
-export function renderHeat(a: Agg) {
+export function renderHeat(a: AggCore) {
   const box = $('heat');
   if (!a.hasClock) { box.innerHTML = '<div class="empty">時刻つきの日時がないため、表示できません。</div>'; return; }
   const max = Math.max(1, ...a.heat.flat());

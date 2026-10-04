@@ -11,6 +11,10 @@ describe('detectMap', () => {
     const m = detectMap(['日時', 'セッション名', '氏名', '平均視聴時間', '視聴時間（分）']);
     expect(m).toMatchObject({ time: 0, video: 1, name: 2, min: 4 });
   });
+  it('maps 配信所要時分 to watched minutes', () => {
+    expect(detectMap(['日時', 'セッション名', '氏名', '配信所要時分']).min).toBe(3);
+    expect(detectMap(['日時', 'セッション名', '氏名', '配信所要時分（分）']).min).toBe(3);
+  });
 });
 
 describe('decodeText', () => {

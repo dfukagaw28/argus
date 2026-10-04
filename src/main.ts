@@ -2,7 +2,7 @@ import './style.css';
 import { $, esc, ymd } from './util';
 import { state } from './state';
 import { connectEngine } from './engine/client';
-import type { FilePatch } from './engine/engine';
+import { STALE_MESSAGE, type FilePatch } from './engine/engine';
 import { download } from './io/download';
 import { forget, loadSaved, save } from './io/prefs';
 import { renderHeat, renderSeries } from './ui/charts';
@@ -10,7 +10,7 @@ import { renderTable } from './ui/tables';
 import { renderFiles, renderKpis } from './ui/panels';
 import { initTips, toast } from './ui/tip';
 import { busy } from './ui/busy';
-import { initFileHandler, initPwa } from './pwa';
+import { initFileHandler, initPwa, showStale } from './pwa';
 import type { RoleKey, Unit } from './schema/roles';
 import type { FileKind } from './model/types';
 
@@ -58,6 +58,7 @@ async function addFiles(list: File[]) {
     const errs = await busy(engine.addFiles(list, loadSaved()), '読み込み中…');
     $('errors').innerHTML = errs.map(e => `<div class="notice">${esc(e)}</div>`).join('');
   } catch (e) { $('errors').innerHTML = `<div class="notice">${esc('読み込みに失敗しました：' + ((e as Error)?.message || e))}</div>`; }
+  if ($('errors').textContent?.includes(STALE_MESSAGE)) showStale(STALE_MESSAGE);
   if (wasSample) resetPeriod();
   await refresh();
 }
@@ -74,7 +75,10 @@ async function exportExcel() {
   try {
     download(await busy(engine.exportXlsx(query(), state.missTh), 'Excel を作成中…'), `Panopto視聴集計_${ymd(new Date()).replace(/-/g, '')}.xlsx`);
     toast('Excel ファイルを書き出しました。');
-  } catch (e) { toast('Excel の作成に失敗しました：' + ((e as Error)?.message || e)); }
+  } catch (e) {
+    const msg = (e as Error)?.message || String(e);
+    if (msg === STALE_MESSAGE) showStale(msg); else toast('Excel の作成に失敗しました：' + msg);
+  }
   btn.disabled = false;
 }
 

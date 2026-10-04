@@ -1,4 +1,4 @@
-import { Engine } from './engine';
+import { Engine, isChunkLoadError, preloadLazyModules, STALE_MESSAGE } from './engine';
 
 export type Method = 'addFiles' | 'removeFile' | 'updateFile' | 'setSaved' | 'query' | 'exportXlsx';
 export interface Req { id: number; method: Method; args: unknown[] }
@@ -20,7 +20,11 @@ scope.onmessage = (e: MessageEvent<Req>) => {
       const result = await (engine[method] as (...a: unknown[]) => unknown)(...args);
       scope.postMessage({ id, ok: true, result } satisfies Res, result instanceof ArrayBuffer ? [result] : []);
     } catch (err) {
-      scope.postMessage({ id, ok: false, error: (err as Error)?.message || String(err) } satisfies Res, []);
+      const error = isChunkLoadError(err) ? STALE_MESSAGE : (err as Error)?.message || String(err);
+      scope.postMessage({ id, ok: false, error } satisfies Res, []);
     }
   });
 };
+
+// after the first screen is drawn, fetch the Excel chunks while they are still on the server
+setTimeout(() => { preloadLazyModules().catch(() => { /* retried on demand */ }); }, 500);

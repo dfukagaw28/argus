@@ -23,6 +23,18 @@ export interface View {
 const info = ({ rows, ...f }: SourceFile): FileInfo => ({ ...f, nRows: rows.length });
 
 /**
+ * Loads the on-demand chunks (Excel reader/writer) right away. Each deploy replaces every file
+ * on the server, so a tab that waited until the first export would ask for a chunk that no longer
+ * exists whenever no service worker kept the old version (e.g. blocked by browser settings).
+ */
+export const preloadLazyModules = () => Promise.all([import('../io/export'), import('exceljs')]);
+
+/** Message for a chunk that could not be fetched: the open page is older than the published app. */
+export const STALE_MESSAGE = 'アプリの新しい版が公開されたため、この画面からは必要な部品を読み込めませんでした。ページを再読み込みしてください（読み込んだファイルは、もう一度読み込む必要があります）。';
+export const isChunkLoadError = (e: unknown) =>
+  /dynamically imported module|Importing a module script failed|error loading dynamically imported module|Failed to load module script/i.test((e as Error)?.message ?? String(e));
+
+/**
  * Holds the loaded files and does all heavy work (parsing, merging, aggregation, Excel).
  * Runs inside a Web Worker in the app; tests drive it directly.
  */

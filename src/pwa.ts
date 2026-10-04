@@ -26,6 +26,15 @@ function showUpdate(w: ServiceWorker) {
   $('btn-update').onclick = () => w.postMessage({ type: 'skip-waiting' });
 }
 
+/** The open page is older than the published files and cannot fetch its own chunks: offer a reload. */
+export function showStale(msg: string) {
+  const el = $('update'); el.hidden = false;
+  el.querySelector('span')!.textContent = msg;
+  $('btn-update').textContent = '再読み込み';
+  $('btn-update').onclick = () => location.reload();
+  el.scrollIntoView({ block: 'nearest' });
+}
+
 /** Files opened from the OS ("Open with" on an installed app) arrive through the launch queue. */
 export function initFileHandler(open: (files: File[]) => void) {
   const lq = (window as unknown as { launchQueue?: { setConsumer(cb: (p: { files: FileSystemFileHandle[] }) => void): void } }).launchQueue;

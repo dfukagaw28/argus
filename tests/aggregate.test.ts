@@ -26,7 +26,7 @@ describe('aggregate', () => {
     expect(a.heat[0][21]).toBe(1); // Monday 21:00
   });
   it('filters by inclusive local date range', () => {
-    const a = aggregate(recs(), new Date(2026, 3, 14), new Date(2026, 3, 20));
+    const a = aggregate(recs(), { from: new Date(2026, 3, 14), to: new Date(2026, 3, 20) });
     expect(a.recs).toHaveLength(3);
   });
   it('fills gaps in the series', () => {

@@ -1,5 +1,6 @@
 import Papa from 'papaparse';
 import { detectMap, detectUnit } from '../schema/detect';
+import { detectKind } from '../schema/kind';
 import { str, type Cell } from '../parse/value';
 import type { SourceFile } from '../model/types';
 
@@ -62,5 +63,5 @@ export function toSourceFile(name: string, rows: Cell[][]): SourceFile {
   const headers = rows[hi].map(str), body = rows.slice(hi + 1).filter(r => r.some(c => str(c) !== ''));
   if (!body.length) throw new Error('見出し行の下にデータがありません。');
   const map = detectMap(headers);
-  return { id: 'f' + (++seq), name, headers, rows: body, map, unit: detectUnit(headers, map) };
+  return { id: 'f' + (++seq), name, headers, rows: body, map, unit: detectUnit(headers, map), kind: detectKind(map) };
 }

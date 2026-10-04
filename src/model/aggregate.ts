@@ -1,5 +1,5 @@
 import { byName, pad, wday, WD, ymd } from '../util';
-import type { Agg, DayAgg, Rec, UserAgg, VideoAgg } from './types';
+import type { Agg, DayAgg, Person, Rec, UserAgg, VideoAgg } from './types';
 
 export type Gran = 'day' | 'week' | 'month';
 
@@ -9,8 +9,16 @@ export function bucketKey(d: Date, gran: Gran): string {
   return ymd(d);
 }
 
-/** Aggregates records within [from, to] (inclusive, local dates). Records without a date are always kept. */
-export function aggregate(all: Rec[], from: Date | null = null, to: Date | null = null): Agg {
+export interface AggOptions {
+  /** inclusive local dates; records without a date are always kept */
+  from?: Date | null; to?: Date | null;
+  /** '' = all folders */
+  folder?: string;
+  /** class list: members who watched nothing are added with zero totals */
+  roster?: Person[];
+}
+
+export function aggregate(all: Rec[], { from = null, to = null, folder = '', roster = [] }: AggOptions = {}): Agg {
   const toEnd = to ? new Date(to.getFullYear(), to.getMonth(), to.getDate() + 1).getTime() - 1 : null;
   const users = new Map<string, UserAgg>(), videos = new Map<string, VideoAgg>(), days = new Map<string, DayAgg>();
   const heat = WD.map(() => new Array<number>(24).fill(0));
@@ -18,6 +26,7 @@ export function aggregate(all: Rec[], from: Date | null = null, to: Date | null 
   const recs: Rec[] = [];
   for (const r of all) {
     if (r.t && ((from && r.t < from) || (toEnd != null && +r.t > toEnd))) continue;
+    if (folder && r.folder !== folder) continue;
     recs.push(r); views += r.views; min += r.min;
     if (r.t) {
       if (!tMin || r.t < tMin) tMin = r.t;
@@ -38,7 +47,7 @@ export function aggregate(all: Rec[], from: Date | null = null, to: Date | null 
     }
     if (r.uKey) {
       let u = users.get(r.uKey);
-      if (!u) users.set(r.uKey, u = { key: r.uKey, name: r.uName, id: r.uId, email: r.email, views: 0, min: 0, last: null, pairs: new Map(), nVideos: 0, comp: null });
+      if (!u) users.set(r.uKey, u = newUser(r));
       u.views += r.views; u.min += r.min;
       if (r.t && (!u.last || r.t > u.last)) u.last = r.t;
       if (!u.email && r.email) u.email = r.email;
@@ -49,6 +58,20 @@ export function aggregate(all: Rec[], from: Date | null = null, to: Date | null 
         p.min += r.min; p.views += r.views;
         if (r.pct != null && (p.pct == null || r.pct > p.pct)) p.pct = r.pct;
       }
+    }
+  }
+  const nViewers = users.size;
+  if (roster.length) {
+    // match roster members to viewers by key, user ID or email (the two sources may key people differently)
+    const lc = (s: string) => s.toLowerCase(), byAlias = new Map<string, UserAgg>();
+    for (const u of users.values()) for (const k of [u.key, lc(u.id), lc(u.email)]) if (k && !byAlias.has(k)) byAlias.set(k, u);
+    for (const p of roster) {
+      const u = [p.uKey, lc(p.uId), lc(p.email)].map(k => k && byAlias.get(k)).find(Boolean);
+      if (u) {
+        u.inRoster = true;
+        if (p.uName && (u.name === u.id || u.name === u.email)) u.name = p.uName;
+        if (!u.id && p.uId) u.id = p.uId; if (!u.email && p.email) u.email = p.email; continue; }
+      if (!users.has(p.uKey)) { const n = newUser(p); n.inRoster = true; users.set(p.uKey, n); }
     }
   }
   // completion: explicit max percent, else watched minutes ÷ video length (capped at 100)
@@ -64,8 +87,11 @@ export function aggregate(all: Rec[], from: Date | null = null, to: Date | null 
   }
   for (const v of videos.values()) { v.nUsers = v.users.size; v.comp = v.cN ? v.cSum / v.cN : null; v.per = v.nUsers ? v.min / v.nUsers : null; }
   const vList = [...videos.values()].sort((a, b) => (a.first && b.first ? +a.first - +b.first : 0) || byName(a.name, b.name));
-  return { recs, users, videos, vList, days, heat, views, min, tMin, tMax, hasClock, anyComp, comp: cNAll ? cSumAll / cNAll : null };
+  return { recs, users, videos, vList, days, heat, views, min, tMin, tMax, hasClock, anyComp, comp: cNAll ? cSumAll / cNAll : null, nViewers, hasRoster: roster.length > 0 };
 }
+
+const newUser = (p: Person): UserAgg =>
+  ({ key: p.uKey, name: p.uName, id: p.uId, email: p.email, views: 0, min: 0, last: null, pairs: new Map(), nVideos: 0, comp: null, inRoster: false });
 
 export type Metric = 'views' | 'min' | 'users';
 

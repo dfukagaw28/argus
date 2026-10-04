@@ -21,7 +21,7 @@
   <section class="drop" id="drop">
     <div>
       <strong>Panopto の統計レポート（CSV / Excel）をここにドロップ</strong>
-      <span>複数ファイルをまとめて読み込めます。列名は自動で判別し、あとから直せます。</span>
+      <span>複数ファイルをまとめて読み込めます。列名は自動で判別し、あとから直せます。受講者名簿を一緒に読み込むと、まったく視聴していない人もわかります。</span>
     </div>
     <button class="btn" id="btn-pick" type="button">ファイルを選ぶ</button>
     <input type="file" id="file-input" multiple accept=".csv,.tsv,.txt,.xlsx" hidden>
@@ -36,8 +36,11 @@
   <div class="filters">
     <label>期間 <input type="date" id="f-from"> 〜 <input type="date" id="f-to"></label>
     <button class="btn link" id="f-reset" type="button">全期間に戻す</button>
+    <label id="f-folder-wrap" hidden>フォルダー <select id="f-folder"></select></label>
+    <button class="btn" id="btn-print" type="button">印刷</button>
   </div>
 
+  <p class="print-scope" id="print-scope"></p>
   <section class="kpis" id="kpis"></section>
 
   <div class="charts">
@@ -73,12 +76,25 @@
       <button type="button" role="tab" data-tab="videos" aria-selected="true">動画別</button>
       <button type="button" role="tab" data-tab="users" aria-selected="false">受講者別</button>
       <button type="button" role="tab" data-tab="matrix" aria-selected="false">受講者 × 動画</button>
+      <button type="button" role="tab" data-tab="missing" aria-selected="false">未視聴</button>
     </div>
     <div class="tablebar">
       <input type="search" id="q" placeholder="名前で絞り込む" aria-label="名前で絞り込む">
       <div class="seg" id="seg-mx" role="group" aria-label="表の値" hidden>
         <button type="button" data-v="comp" aria-pressed="true">完了率</button>
         <button type="button" data-v="min" aria-pressed="false">視聴時間（分）</button>
+      </div>
+      <div class="miss-opts" id="miss-opts" hidden>
+        <div class="seg" id="seg-miss" role="group" aria-label="まとめ方">
+          <button type="button" data-v="user" aria-pressed="true">受講者ごと</button>
+          <button type="button" data-v="video" aria-pressed="false">動画ごと</button>
+        </div>
+        <label id="miss-th-wrap">未視聴とみなす範囲 <select id="miss-th">
+          <option value="0">記録なしのみ</option>
+          <option value="50">完了率 50% 未満も含める</option>
+          <option value="80">完了率 80% 未満も含める</option>
+          <option value="100">完了率 100% 未満も含める</option>
+        </select></label>
       </div>
     </div>
     <div id="table"></div>

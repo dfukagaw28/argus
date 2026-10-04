@@ -10,7 +10,7 @@ export const ROLES: Role[] = [
   { k: 'video', label: '動画名', exact: ['sessionname', 'session', 'videoname', 'video', 'title', 'セッション名', 'セッション', '動画名', '動画', 'ビデオ名', 'タイトル'], has: ['sessionname', 'セッション名', '動画名', 'videoname', 'videotitle'] },
   { k: 'folder', label: 'フォルダー', exact: ['foldername', 'folder', 'フォルダー名', 'フォルダ名', 'フォルダー', 'フォルダ'], has: ['foldername', 'フォルダー名', 'フォルダ名'] },
   { k: 'email', label: 'メール', exact: ['email', 'emailaddress', 'mail', 'メール', 'メールアドレス', 'eメール'], has: ['email', 'メール'] },
-  { k: 'userId', label: 'ユーザー ID', exact: ['username', 'userid', 'user', 'login', 'ユーザー名', 'ユーザーid', 'ユーザー', 'ユーザ名'], has: ['username', 'userid', 'ユーザー名', 'ユーザーid'] },
+  { k: 'userId', label: 'ユーザー ID', exact: ['username', 'userid', 'user', 'login', 'studentid', 'studentnumber', 'ユーザー名', 'ユーザーid', 'ユーザー', 'ユーザ名', '学籍番号', '学生番号', '学籍'], has: ['username', 'userid', 'ユーザー名', 'ユーザーid', '学籍番号', '学生番号', 'studentid'] },
   { k: 'name', label: '氏名', exact: ['name', 'fullname', 'displayname', 'viewer', '名前', '氏名', '表示名', '視聴者'], has: ['fullname', 'displayname', '氏名'] },
   { k: 'time', label: '視聴日時', exact: ['timestamp', 'date', 'datetime', 'time', 'viewdate', 'dateandtime', '日時', '日付', '視聴日', '視聴日時', 'タイムスタンプ'], has: ['timestamp', 'datetime', '日時', '日付', 'タイムスタンプ', 'date'] },
   { k: 'min', label: '視聴時間', exact: ['minutesdelivered', 'minutesviewed', 'minutes', 'secondsviewed', 'secondsdelivered', '視聴時間', '配信時間', '配信分数', '再生時間', '視聴分数'], has: ['minutesdelivered', 'minutesviewed', '視聴時間', '配信時間', '配信分', '再生時間', 'minutes', 'secondsviewed'] },

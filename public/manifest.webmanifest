@@ -1,7 +1,7 @@
 {
   "name": "Panopto 視聴集計",
   "short_name": "視聴集計",
-  "description": "Panopto の統計レポートを端末の中だけで集計するツール",
+  "description": "Panopto の統計レポートを端末の中だけで集計する非公式ツール（Panopto は Panopto, Inc. の登録商標です）",
   "lang": "ja",
   "id": "./",
   "start_url": "./",

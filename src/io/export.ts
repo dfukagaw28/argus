@@ -34,6 +34,7 @@ export async function buildWorkbook(a: Agg, source: string, missTh = 0): Promise
    ['視聴者数（人）', a.nViewers], ...(a.hasRoster ? [['名簿の人数（人）', [...a.users.values()].filter(u => u.inRoster).length]] : []), ['動画数（本）', a.videos.size], ['視聴回数（回）', a.views],
    ['総視聴時間（分）', r1(a.min)], ['総視聴時間（時間）', r1(a.min / 60)], ['平均完了率（%）', r1(a.comp) ?? '—'],
    [], ['完了率について', '完了率の列があればその最大値、なければ「視聴時間 ÷ 動画の長さ」（上限 100%）で求めています。'],
+   ['商標について', 'Panopto は Panopto, Inc. の登録商標です。本ツールは Panopto, Inc. が提供・承認するものではなく、同社とは関係のない非公式のツールです。'],
   ].forEach(r => ws0.addRow(r));
   ws0.getColumn(1).font = { bold: true }; ws0.getRow(1).font = { bold: true, size: 14 };
   ws0.getColumn(2).alignment = { horizontal: 'left', wrapText: true };
